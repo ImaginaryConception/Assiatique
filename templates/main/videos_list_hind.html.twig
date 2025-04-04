@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fichiers envoyés
+{% endblock %}
+
+{% block header %}Fichiers envoyés
+{% endblock %}
+
+{% block body %}
+
+	{% for video in videos %}
+
+		<div id="global-view3" class="mt-4">
+			<a class="link" href="{{ asset('Videos/Video/' ~ video.video) }}" download="{{ video.video }}">Retélécharger votre fichier</a>
+			<a class="me-sm-3 mx-auto mx-sm-0 bg-danger link text-decoration-none w-100 mb-3 mt-2 p-2" href="{{ path('remove_hind', {'id': video.id }) }}">Supprimer</a>
+		</div>
+
+	{% else %}
+
+		<p class="text-center text-light fs-5">Vous n'avez pas importé de fichier.</p>
+
+	{% endfor %}
+
+{% endblock %}

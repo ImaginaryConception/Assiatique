@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Envoyer
+{% endblock %}
+
+{% block header %}Envoyer
+{% endblock %}
+
+{% block body %}
+
+	<div id="add_video_form" class="row mt-4 mb-5 mx-auto">
+
+		{{ form_start( add_video_form ) }}
+
+		{{ form_errors( add_video_form ) }}
+
+		<p class="text-light text-center">Fichiers *</p>
+
+		{{ form_row( add_video_form.video, {'attr': {'class': 'file-upload'}}) }}
+
+		{{ form_row( add_video_form.save ) }}
+
+		{{ form_end( add_video_form ) }}
+
+	</div>
+
+{% endblock %}

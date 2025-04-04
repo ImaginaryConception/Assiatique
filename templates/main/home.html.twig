@@ -1,0 +1,118 @@
+{% set route = app.request.attributes.get('_route')%}
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		<![endif]-->
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Accueil - FileTransferByIC</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+		<link rel="stylesheet" href="{{ asset('CSS/bootstrap.min.css') }}">
+		<link rel="stylesheet" href="{{ asset('CSS/styles.css') }}">
+		<script src="{{ asset(('JS/bootstrap.bundle.min.js')) }}" defer></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+		<script src="{{ asset(('JS/script.js')) }}" defer></script>
+	</head>
+	<body>
+
+		<div class="container-fluid">
+
+			<div class="row">
+
+				<header class="col-12">
+					<h1 class="text-light fs-6 text-center" id="title"></h1>
+				</header>
+
+			</div>
+
+			{% include '_partials/_flashes.html.twig' %}
+
+			{% if countUsers <= 1 and not app.user %}
+				<div class="d-flex flex-md-row flex-column justify-content-center">
+					<a class="register2 me-md-4 me-0 mb-md-0 mb-4{{ route == 'app_register' ? ' nav-active2' }}" href="{{ path('app_register') }}">Inscription</a>
+			{% endif %}
+			{% if countUsers > 0 and not app.user %}
+					<a class="register2{{ route == 'app_login' ? ' nav-active2' }}" href="{{ path('app_login') }}">Connexion</a>
+				</div>
+			{% endif %}
+
+			{% if app.user and app.user.identifiant == 'assia' %}
+				<div class="d-flex mt-4 flex-column flex-md-row justify-content-center">
+					<a class="register2 me-md-4 me-0 mb-md-0 mb-4{{ route == 'add_video' ? ' nav-active2' }}" href="{{ path('add_video') }}">Envoyer des fichiers</a>
+					<a class="register2 me-md-4 me-0 mb-md-0 mb-4{{ route == 'assia_videos_list' ? ' nav-active2' }}" href="{{ path('assia_videos_list') }}">Fichiers envoyés</a>
+				</div>
+			{% elseif app.user and app.user.identifiant == 'hind' %}
+				<div class="d-flex mt-4 flex-column flex-md-row justify-content-center">
+					<a class="register2 me-md-4 me-0 mb-md-0 mb-4{{ route == 'add_video_hind' ? ' nav-active2' }}" href="{{ path('add_video_hind') }}">Envoyer des fichiers</a>
+					<a class="register2 me-md-4 me-0 mb-md-0 mb-4{{ route == 'hind_videos_list' ? ' nav-active2' }}" href="{{ path('hind_videos_list') }}">Fichiers envoyés</a>
+				</div>
+			{% endif %}
+
+			{% if app.user and app.user.identifiant == 'hind' %}
+
+				{% for video in videos %}
+					{% if video.statut == '' %}
+						<div id="global-view3" class="mt-4">
+							<p class="text-center text-break text-light"><span class="fw-bold fs-5">Fichiers à télécharger</p>
+							<a class="link mb-2" href="{{ asset('Videos/Video/' ~ video.video) }}" download="{{ video.video }}">Télécharger</a>
+						</div>
+					{% elseif video.statut == 'editrequest' %}
+						<div id="global-view3" class="mt-4">
+							<p class="text-center mt-2 text-break text-warning">Demande de modification</p>
+							<p class="text-center text-break text-light"><span class="fw-bold fs-5">Fichiers à télécharger</p>
+							<a class="link mb-2" href="{{ asset('Videos/Video/' ~ video.video) }}" download="{{ video.video }}">Télécharger la vidéo</a>
+							{% for videoHind in videosHind %}
+								<a class="link" href="{{ path('edit_hind', {'id': video.id, 'id2': videoHind.id }) }}">Modifier</a>
+							{% endfor %}
+						</div>
+					{% endif %}
+
+				{% endfor %}
+
+			{% elseif app.user and app.user.identifiant == 'assia' %}
+
+				{% for videoHind in videosHind %}
+					{% if videoHind.statut == '' %}
+						<div id="global-view3" class="mt-4">
+							<p class="text-center text-break text-light"><span class="fw-bold fs-5">Fichiers à télécharger</p>
+							<a class="link mb-2" href="{{ asset('Videos/VideoHind/' ~ videoHind.video) }}" download="{{ videoHind.video }}">Télécharger le fichier</a>
+							{% for video in videos %}
+								<a class="bg-success link mb-2" href="{{ path('remove_assia', {'id': videoHind.id, 'id2': video.id }) }}">Confirmer</a>
+								<a class="link bg-danger" href="{{ path('edit_assia', {'id': videoHind.id, 'id2': video.id }) }}">Demander une modification</a>
+							{% endfor %}
+						</div>
+					{% elseif videoHind.statut == 'editrequest' %}
+						<div id="global-view3" class="mt-4">
+							<p class="text-center text-break text-light"><span class="fw-bold fs-5">Fichiers à télécharger</p>
+							<a class="link mb-2" href="{{ asset('Videos/VideoHind/' ~ videoHind.video) }}" download="{{ videoHind.video }}">Télécharger le fichier</a>
+							<p class="text-center text-break mt-2 text-light">Vous avez envoyé une demande de modification pour cette vidéo.</p>
+						</div>
+					{% elseif videoHind.statut == 'editrequestconfirmed' %}
+						<div id="global-view3" class="mt-4">
+							<p class="text-center text-break mt-2 bg-light text-success">La modification demandée a été envoyée ici.</p>
+							<a class="link mb-2" href="{{ asset('Videos/VideoHind/' ~ videoHind.video) }}" download="{{ videoHind.video }}">Télécharger le fichier</a>
+							{% for video in videos %}
+								<a class="bg-success link mb-2" href="{{ path('remove_assia', {'id': videoHind.id, 'id2': video.id }) }}">Confirmer</a>
+								<a class="link bg-danger" href="{{ path('edit_assia', {'id': videoHind.id, 'id2': video.id }) }}">Demander une modification</a>
+							{% endfor %}
+						</div>
+					{% endif %}
+
+				{% endfor %}
+
+			{% endif %}
+
+			<div class="mb-6"></div>
+
+			{% if app.user %}
+				<a class="linked2 text-light fs-1" href="{{ path('app_logout') }}"><i class="fa-solid fa-right-from-bracket"></i></a>
+			{% endif %}
+
+			<a class="linked" href="{{ path('mentions_legales') }}">Mentions légales</a>
+
+		</div>
+	</body>
+</html>
